@@ -18,10 +18,10 @@
       <v-container grid-list-md text-xs-center>
         <v-layout row wrap>                 
          <!-- <ElevatorPanel v-for="(clientID,i) in clientIDs" :key=i :data="clients[i]" :ID="clientID"/> -->
-         <ElevatorPanel  :data="client.CAR01" :ID="clientIDs[0]" :status="statuss[0]" @reset-status="resetStatus"/>
-         <ElevatorPanel  :data="client.CAR02" :ID="clientIDs[1]" :status="statuss[1]" @reset-status="resetStatus"/>
-         <ElevatorPanel  :data="client.CAR03" :ID="clientIDs[2]" :status="statuss[2]" @reset-status="resetStatus"/>
-         <ElevatorPanel  :data="client.CAR04" :ID="clientIDs[3]" :status="statuss[3]" @reset-status="resetStatus"/>
+         <ElevatorPanel  :data="client.CAR01" :ID="clientIDs[0]" :status="statusobj.CAR01" @reset-status="resetStatus"/>
+         <ElevatorPanel  :data="client.CAR02" :ID="clientIDs[1]" :status="statusobj.CAR02" @reset-status="resetStatus"/>
+         <ElevatorPanel  :data="client.CAR03" :ID="clientIDs[2]" :status="statusobj.CAR03" @reset-status="resetStatus"/>
+         <ElevatorPanel  :data="client.CAR04" :ID="clientIDs[3]" :status="statusobj.CAR04" @reset-status="resetStatus"/>
         </v-layout>
       </v-container>
     </v-content>
@@ -43,8 +43,9 @@ export default {
       status:String,
       broker: new Paho.Client('broker.mqttdashboard.com', 8000, 'user1x'),
       clientIDs:['CAR01','CAR02','CAR03','CAR04'],
-      statuss:['0','0','0','0'],
-      //status1:0,
+      //statuss:['0','0','0','0'],
+      statusobj:{CAR01:'0', CAR02:'0', CAR03:'0',CAR04:'0'},
+      status1:0,
       client:{
         CAR01: {'P100':0,'P101':0,'P102':0,'P103':0,'P104':0,'P105':0,'P106':0,'P107':0,'P108':0,'P109':0}, 
         CAR02: {'P100':0,'P101':0,'P102':0,'P103':0,'P104':0,'P105':0,'P106':0,'P107':0,'P108':0,'P109':0},
@@ -58,9 +59,27 @@ export default {
     var index= this.clientIDs.indexOf(e);
     //this.cart.push(e);
     console.log('resetStatus called, resetting '+index);
-    //this.statuss[index]='0';
-    this.$set(this.statuss, index, '0')
-    console.log(this.statuss[index]);
+    //this.status1='0';
+    switch (index) {
+         case 0:
+           this.statusobj.CAR01 = '0';
+           break;
+           case 1:
+           this.statusobj.CAR02 = '0';
+           break;
+            case 2:
+           this.statusobj.CAR03 = '0';
+           break;
+            case 3:
+           this.statusobj.CAR04 = '0';
+           break;
+         default:
+           break;
+       }
+    
+    // //this.statuss[index]='0';
+    // //this.$set(this.statuss, index, '0')
+    // console.log(this.statuss[index]);
     },
     onConnectedLost : function(responseObject){  
       console.log("onConnectionLost:"+responseObject.errorMessage);
@@ -73,20 +92,25 @@ export default {
         var i = this.clientIDs.indexOf(obj.ID);
         
         console.log('recieved message from broker with case '+i);
-        console.log('the current status of the elv'+ i+ "is "+this.statuss[i]);
-        this.statuss[i]='1';
+        //console.log('the current status of the elv'+ i+ "is "+this.statuss[i]);
+        //this.statuss[i]='1';
        switch (i) {
          case 0:
-           this.client['CAR01'] = obj
+           this.client['CAR01'] = obj;
+           this.statusobj.CAR01 = '1';
            break;
            case 1:
            this.client['CAR02'] = obj;
+           //this.status1='1'
+           this.statusobj.CAR02 = '1';
            break;
             case 2:
            this.client['CAR03'] = obj;
+           this.statusobj.CAR03 = '1';
            break;
             case 3:
            this.client['CAR04'] = obj;
+           this.statusobj.CAR04 = '1';
            break;
          default:
            break;
