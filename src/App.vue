@@ -125,7 +125,7 @@ export default {
     },
     onConnect:function onConnect() {
       // Once a connection has been made, make a subscription and send a message.
-      this.broker.subscribe('remote/elevators/iga/#');
+      this.broker.subscribe('remote/elevators/iga/#'); //this is the topic  remote/elevators/iga/
       this.status= 'connected'
     },
     onFailure:function() {    

@@ -1,16 +1,23 @@
 <template>
       <v-flex xs3>
+               
         <v-card >
           <v-toolbar color="teal" dark>
             <v-toolbar-title class="headline text-uppercase">
               <span>ID: </span>
               <span class="font-weight-light">{{ID}}</span> <br>
-              <span class="font-weight-light"> status: {{status}} </span> 
-              
+              <span class="font-weight-light"> status: {{status}} </span>
+              <v-icon  large :color="statusI.color[status]">{{statusI.icon[status]}}</v-icon>
+              <!-- <v-icon left> email</v-icon>  -->
+              <!-- <img src="kiwi.svg" alt="Kiwi standing on oval"> -->
+              <!-- <v-img src="baseline-wifi_tethering-24px.svg" aspect-ratio="1.7"></v-img> -->
+
+             
             </v-toolbar-title>  
+            
               
           </v-toolbar>
-            <v-list two-line>
+            <v-list two-line extended>
                <v-list-tile 
                   v-for="item in items"
                   :key ="item.title"
@@ -34,6 +41,10 @@ import { clearInterval } from 'timers';
     props: ['data','ID','status','lastconnectiontime'],          
     data:function (){
       return{     
+        statusI:{
+               icon    :['link_off','link'],
+               color   :['gray','green'],
+        },
         
         items:[
           {
@@ -124,4 +135,8 @@ import { clearInterval } from 'timers';
     filter: FlipH;
     -ms-filter: "FlipH";
 }
+.your-svg-icon{
+fill: currentColor
+}
+  
 </style>
