@@ -58,7 +58,8 @@ export default {
     var index= this.clientIDs.indexOf(e);
     //this.cart.push(e);
     console.log('resetStatus called, resetting '+index);
-    this.statuss[index]='0';
+    //this.statuss[index]='0';
+    this.$set(this.statuss, index, '0')
     console.log(this.statuss[index]);
     },
     onConnectedLost : function(responseObject){  
