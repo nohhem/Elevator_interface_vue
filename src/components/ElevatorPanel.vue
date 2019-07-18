@@ -34,6 +34,7 @@ import { clearInterval } from 'timers';
     props: ['data','ID','status','lastconnectiontime'],          
     data:function (){
       return{     
+        
         items:[
           {
             icon    :['looks_one','looks_one'],
@@ -66,31 +67,48 @@ import { clearInterval } from 'timers';
         ]
       }
     },
+    watch: {
+    status: function (val, oldVal) {
+      console.log('new: %s, old: %s', val, oldVal);
+      if (val=='1'){
+      console.log('keeping CAR'+ this.ID+' a live');
+      setTimeout(() => {
+      this.$emit('reset-status', this.ID);
+      //this.status='0';
+        }, 4000);
+      }
+
+
+    }},
     methods: {
      keepalive: function() {
-      clearInterval();
-      this.status=1;
-      setInterval(() => {
-      //his.status=0;
-    }, 4000);
+      console.log('keeping CAR'+ this.ID+' a live');
+      setTimeout(() => {
+      this.$emit('reset-status', this.ID);
+      //this.status='0';
+      console.log("the status from elevatorpanel"+this.status);
+        }, 4000);
 
 
     }
     
     },
     mounted() {
-    //console.log(this.$el.textContent) // I'm text inside the component.
-    //console.log(" the status of elvatorpanel"+this.$el.ID)
-    
-      
-      setInterval(() => {
-        console.log(" printing from elevatorpanel :" +"id :"+this.ID+" status:" +this.status);
-      
-      //this.status=0;
-    }, 5000);
+ 
+      // setInterval(() => {
+      //   //every second checks the status of the elevator
+      //   //console.log(" printing from elevatorpanel :" +"id :"+this.ID+" status:" +this.status);
+      // if(this.status=='1'){
+      // //if it is alive then check after 4 seconds ,change the status to offilne if no other signal comes
+      // setInterval(() => {
+      //   //make it =0 in 4 seconds 
+      // this.$emit('reset-status', this.ID);
+      // this.status=0;
+      //   }, 4000);
+      // }
+      // }, 1000);
      
 
-    
   }
     
 }

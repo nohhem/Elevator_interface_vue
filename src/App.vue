@@ -18,10 +18,10 @@
       <v-container grid-list-md text-xs-center>
         <v-layout row wrap>                 
          <!-- <ElevatorPanel v-for="(clientID,i) in clientIDs" :key=i :data="clients[i]" :ID="clientID"/> -->
-         <ElevatorPanel  :data="client.CAR01" :ID="clientIDs[0]" :status="statuss[0]"/>
-         <ElevatorPanel  :data="client.CAR02" :ID="clientIDs[1]" :status="statuss[1]"/>
-         <ElevatorPanel  :data="client.CAR03" :ID="clientIDs[2]" :status="statuss[2]"/>
-         <ElevatorPanel  :data="client.CAR04" :ID="clientIDs[3]" :status="statuss[3]"/>
+         <ElevatorPanel  :data="client.CAR01" :ID="clientIDs[0]" :status="statuss[0]" @reset-status="resetStatus"/>
+         <ElevatorPanel  :data="client.CAR02" :ID="clientIDs[1]" :status="statuss[1]" @reset-status="resetStatus"/>
+         <ElevatorPanel  :data="client.CAR03" :ID="clientIDs[2]" :status="statuss[2]" @reset-status="resetStatus"/>
+         <ElevatorPanel  :data="client.CAR04" :ID="clientIDs[3]" :status="statuss[3]" @reset-status="resetStatus"/>
         </v-layout>
       </v-container>
     </v-content>
@@ -54,6 +54,13 @@ export default {
     }
   },
   methods: {
+  resetStatus(e) {
+    var index= this.clientIDs.indexOf(e);
+    //this.cart.push(e);
+    console.log('resetStatus called, resetting '+index);
+    this.statuss[index]='0';
+    console.log(this.statuss[index]);
+    },
     onConnectedLost : function(responseObject){  
       console.log("onConnectionLost:"+responseObject.errorMessage);
       //put mesasge on the title borker not availble
@@ -65,17 +72,11 @@ export default {
         var i = this.clientIDs.indexOf(obj.ID);
         
         console.log('recieved message from broker with case '+i);
-        console.log('the current status of the elv0 is '+ this.statuss[0]);
+        console.log('the current status of the elv'+ i+ "is "+this.statuss[i]);
         this.statuss[i]='1';
        switch (i) {
          case 0:
-           //this.client.status1=1;
-           
-           //this.client.statuss[0]=1;
-           
            this.client['CAR01'] = obj
-           //vm.$refs.elv0.keepalive();
-           //console.log('keeping car01 alive');
            break;
            case 1:
            this.client['CAR02'] = obj;
@@ -115,4 +116,5 @@ export default {
     this.broker.onMessageArrived = this.onMessageArrived;    
   }
 }
+
 </script>
