@@ -1,55 +1,49 @@
 <template>
       <v-flex xs3>
-               
         <v-card >
-          <v-toolbar color="teal" dark>
+       
+          <v-toolbar  dark  >
             <v-toolbar-title class="headline text-uppercase">
               <span>ID: </span>
-              <span class="font-weight-light">{{ID}}</span> <br>
-              <span class="font-weight-light"> status: {{status}} </span>
-              <v-icon  large :color="statusI.color[status]">{{statusI.icon[status]}}</v-icon>
-              <!-- <v-icon left> email</v-icon>  -->
-              <!-- <img src="kiwi.svg" alt="Kiwi standing on oval"> -->
-              <!-- <v-img src="baseline-wifi_tethering-24px.svg" aspect-ratio="1.7"></v-img> -->
-
-             
-            </v-toolbar-title>  
-            
-              
+              <span class="font-weight-light">{{ID}}</span>              
+            </v-toolbar-title>          
+            <v-spacer></v-spacer>  
+              <v-icon large :color="s_color[status]" :class="status?'':'blink'">{{s_icon[status]}}</v-icon>                        
           </v-toolbar>
-            <v-list two-line extended>
+         
+            <v-list two-line>
                <v-list-tile 
                   v-for="item in items"
                   :key ="item.title"
                 >
-                 <v-list-tile-content>
+                 <v-list-tile-content dim>
                     <v-list-tile-title >{{item.title}}</v-list-tile-title>
                     <v-list-tile-sub-title >{{item.subtitle}}</v-list-tile-sub-title>
                   </v-list-tile-content>
                   <v-list-tile-action>
-                      <v-icon  large v-bind:color="item.color[data[item.title]]">{{item.icon[data[item.title]]}}</v-icon>
+                      <v-icon class="material-icons-outlined" x-large v-bind:color="status?item.color[data[item.title]]:'grey'">{{item.icon[data[item.title]]}}</v-icon>
                   </v-list-tile-action>
                </v-list-tile>
+               
             </v-list>      
           </v-card>
+           
         </v-flex>    
 </template>
 
 <script>
-import { clearInterval } from 'timers';
   export default {
-    props: ['data','ID','status','lastconnectiontime'],          
+    props: ['data','ID'],          
     data:function (){
-      return{     
-        statusI:{
-               icon    :['link_off','link'],
-               color   :['gray','green'],
-        },
-        
+      return{
+        timer:null,
+        status:0,
+        s_icon    :['cast','cast_connected'],
+        s_color   :['red','light-green accent-3'],   
         items:[
           {
-            icon    :['looks_one','looks_one'],
-            color   :['green','green lighten-1'],
+            icon    :['mdi-numeric-0-box','mdi-numeric-1-box'],
+            color   :['green','green'],
             title   :'P100' ,
             subtitle:'Kat'
           },
@@ -66,7 +60,7 @@ import { clearInterval } from 'timers';
           {
             icon:['priority_high','priority_high'],color:['grey lighten-1','red'],title:'P104', subtitle:'Deprem Sensörü'},
           {
-            icon:['build','build'],color:['grey lighten-1','red'],title:'P105', subtitle:'Arıza'},
+            icon:['build','build'],color:['grey lighten-1','yellow  darken-1'],title:'P105', subtitle:'Arıza'},
           {
             icon:['check_circle','error'],color:['green','red'],title:'P106', subtitle:'Durum'},
           {
@@ -78,52 +72,21 @@ import { clearInterval } from 'timers';
         ]
       }
     },
-    watch: {
-    status: function (val, oldVal) {
-      console.log('new: %s, old: %s', val, oldVal);
-      if (val=='1'){
-      console.log('keeping CAR'+ this.ID+' a live');
-      setTimeout(() => {
-      this.$emit('reset-status', this.ID);
-      //this.status='0';
-        }, 4000);
-      }
 
-
-    }},
     methods: {
-     keepalive: function() {
-      console.log('keeping CAR'+ this.ID+' a live');
-      setTimeout(() => {
-      this.$emit('reset-status', this.ID);
-      //this.status='0';
-      console.log("the status from elevatorpanel"+this.status);
-        }, 4000);
-
-
+      keepAlive: function() {
+        this.status=1;
+        console.log('keeping '+ this.ID+' alive ');
+        clearTimeout(this.timer);
+        this.timer=setTimeout(
+          () => {
+            this.status=0;
+            console.log("The conecction to the " + this.ID +"  LOST ");
+          }, 
+          5000); // 5 sn
+      }
     }
-    
-    },
-    mounted() {
- 
-      // setInterval(() => {
-      //   //every second checks the status of the elevator
-      //   //console.log(" printing from elevatorpanel :" +"id :"+this.ID+" status:" +this.status);
-      // if(this.status=='1'){
-      // //if it is alive then check after 4 seconds ,change the status to offilne if no other signal comes
-      // setInterval(() => {
-      //   //make it =0 in 4 seconds 
-      // this.$emit('reset-status', this.ID);
-      // this.status=0;
-      //   }, 4000);
-      // }
-      // }, 1000);
-     
-
-  }
-    
 }
-
 </script>
 
 <style>
@@ -135,8 +98,19 @@ import { clearInterval } from 'timers';
     filter: FlipH;
     -ms-filter: "FlipH";
 }
-.your-svg-icon{
-fill: currentColor
-}
-  
+
+  .blink {
+      animation: blink 2s steps(5, start) infinite;
+      -webkit-animation: blink 1s steps(5, start) infinite;
+    }
+    @keyframes blink {
+      to {
+        visibility: hidden;
+      }
+    }
+    @-webkit-keyframes blink {
+      to {
+        visibility: hidden;
+      }
+    }
 </style>
