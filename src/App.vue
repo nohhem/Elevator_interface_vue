@@ -42,7 +42,7 @@ export default {
       showInfo:false,
       connected:false,
       status:String,
-      broker: new Paho.Client('broker.mqttdashboard.com', 8000, 'clientId-isTfNMk9qT'),
+      broker: new Paho.Client('broker.mqttdashboard.com', 8000, 'clientId-4zBYhRALz2'),
       clientIDs:['L666','L667','L668','L669'],
       clients:{
         CAR01: {'P100':0,'P101':0,'P102':0,'P103':0,'P104':0,'P105':0,'P106':0,'P107':0,'P108':0,'P109':0}, 
@@ -59,6 +59,17 @@ export default {
       this.connected= false
       this.showInfo = true
     },
+    // called when the client loses its connection
+   onConnectionLost(responseObject) {
+    
+    console.log("onConnectionLost:"+responseObject.errorMessage);
+      this.status = 'Bağlantı Koptu-onConnectionLost'
+      this.connected= false
+      this.showInfo = true
+
+      
+    },
+    
     onMessageArrived : function (message) {
      // alert(message.payloadString) 
      // {"ID":"L666","P100":1,"P101":1,"P102":0,"P103":0,"P104":0,"P105":0,"P106":0,"P107":0,"P108":0,"P109":0} 
@@ -81,21 +92,32 @@ export default {
       this.broker.subscribe('remote/elevators/iga/#');
       this.connected= true
       this.showInfo= true
+      //setTimeout(MQTTconnect, 2000);
       
     },
     onFailure:function() {    
       this.status = 'Bağlantı Hatası'
       this.connected= false
       this.showInfo= true
+      //setTimeout(MQTTconnect, 2000);
+      console.log('onFailure called');
     }
   },
    created: function() {
+     //
+    //this.broker.reconnect=true;
+    //
     this.broker.connect({
       onSuccess: this.onConnect,
-      onFailure: this.onFailure
+      onFailure: this.onFailure,
+      reconnect: true,
+      timeout: 5,
+      keepAliveInterval:5
+
     });
-    this.broker.onConnectedLost = this.onConnectedLost;
+    this.broker.onConnectionLost = this.onConnectionLost;
     this.broker.onMessageArrived = this.onMessageArrived;    
+
   }
 }
 </script>
